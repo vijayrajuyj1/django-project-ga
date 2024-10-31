@@ -75,7 +75,7 @@ jobs:
 
       - name: Update Helm values
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
           git config user.email "vijayarajuyj1@gmail.com"
           git config user.name "vijayrajuyj1"
