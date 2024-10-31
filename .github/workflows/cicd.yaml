@@ -57,4 +57,4 @@ jobs:
           sed -i 's/tag: .*/tag: '"${{ github.run_number }}"'/g' helm/demo/values.yaml
           git add helm/demo/values.yaml
           git commit -m "Update deployment image to version ${{ github.run_number }}"
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/vijayrajuyj1/django-project-j HEAD:main
+          git push https://${{ secrets.TOKEN }}@github.com/vijayrajuyj1/django-project-ga HEAD:main
