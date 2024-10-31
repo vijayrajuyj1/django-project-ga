@@ -44,34 +44,9 @@ jobs:
         run: |
           docker tag vijayarajult2/django-todo:${{ github.run_number }} vijayarajult2/django-todo:latest
           docker push vijayarajult2/django-todo:${{ github.run_number }}
-          docker push vijayarajult2/django-todo:latest
+          docker push vijayarajult2/django-todo:lates
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-
-      - name: Cache SonarQube packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-
-      - name: Install SonarQube Scanner
-        run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-          unzip sonar-scanner-cli-4.6.2.2472-linux.zip -d $HOME
-          export PATH="$PATH:$HOME/sonar-scanner-4.6.2.2472-linux/bin"
-
-      - name: Run SonarQube analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          sonar-scanner \
-          -Dsonar.projectKey=django-todo \
-          -Dsonar.sources=. \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+  
 
       - name: Update Helm values
         env:
