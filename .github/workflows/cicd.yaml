@@ -1,7 +1,10 @@
-name: Django CI/CD
+name: Go CI Pipeline
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -10,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -33,27 +36,49 @@ jobs:
           python3 manage.py migrate
           # Add any additional testing commands if needed
 
-      - name: Build Docker image
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/go-web-app:${{ github.run_id }}
+
+  update-newtag-in-helm-chart:
+    runs-on: ubuntu-latest
+    needs: push
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.TOKEN }}
+
+      - name: Update tag in Helm chart
         run: |
-          docker build -t vijayarajult2/django-todo:${{ github.run_number }} .
+          sed -i 's/tag: .*/tag: "${{ github.run_id }}"/' helm/helm1/values.yaml
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-      - name: Push Docker image to Docker Hub
-        run: |
-          docker tag vijayarajult2/django-todo:${{ github.run_number }} vijayarajult2/django-todo:latest
-          docker push vijayarajult2/django-todo:${{ github.run_number }}
-          docker push vijayarajult2/django-todo:latest
-
-      - name: Update Helm values
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
+      - name: Commit and push changes
         run: |
           git config --global user.email "vijayarajuyj1@gmail.com"
           git config --global user.name "vijayrajuyj1"
-          sed -i 's/tag: .*/tag: '"${{ github.run_number }}"'/g' helm/demo/values.yaml
-          git add helm/demo/values.yaml
-          git commit -m "Update deployment image to version ${{ github.run_number }}"
+          git add helm/helm1/values.yaml
+          git commit -m "Update tag in Helm chart"
           git push origin main
-
