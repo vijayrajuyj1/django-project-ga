@@ -55,5 +55,5 @@ jobs:
           sed -i 's/tag: .*/tag: '"${{ github.run_number }}"'/g' helm/demo/values.yaml
           git add helm/demo/values.yaml
           git commit -m "Update deployment image to version ${{ github.run_number }}"
-          git push new1-origin main
+          git push origin main
 
