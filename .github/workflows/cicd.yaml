@@ -44,7 +44,7 @@ jobs:
         run: |
           docker tag vijayarajult2/django-todo:${{ github.run_number }} vijayarajult2/django-todo:latest
           docker push vijayarajult2/django-todo:${{ github.run_number }}
-          docker push vijayarajult2/django-todo:47
+          docker push vijayarajult2/django-todo:latest
 
   
 
