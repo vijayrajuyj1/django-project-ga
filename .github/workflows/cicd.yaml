@@ -46,8 +46,6 @@ jobs:
           docker push vijayarajult2/django-todo:${{ github.run_number }}
           docker push vijayarajult2/django-todo:latest
 
-  
-
       - name: Update Helm values
         env:
           TOKEN: ${{ secrets.TOKEN }}
@@ -58,3 +56,4 @@ jobs:
           git add helm/demo/values.yaml
           git commit -m "Update deployment image to version ${{ github.run_number }}"
           git push https://${{ secrets.TOKEN }}@github.com/vijayrajuyj1/django-project-ga HEAD:main
+
