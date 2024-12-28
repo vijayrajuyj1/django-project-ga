@@ -34,7 +34,7 @@ spec:
 
       - name: todo-app
 
-        image: vijayarajult2/django-todo:{{ >Values.image.tag }}
+        image: vijayarajult2/django-todo:{{ .Values.image.tag }}
 
         ports:
 
